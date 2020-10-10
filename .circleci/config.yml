@@ -11,7 +11,7 @@ jobs:
       - restore_cache:
           keys:
             - 'renv-lock-{{ checksum "renv.lock" }}'
-            - 'renv-lock'
+            - "renv-lock"
 
       - run:
           name: Install dependencies
@@ -36,8 +36,34 @@ jobs:
                 echo "Seems like renv.lock needs updating, please run 'renv::snapshot()' in Rstudio or 'Rscript -e \"renv::snapshot()\"' in your Terminal"
             fi
 
+  styler:
+    docker:
+      - image: rocker/r-ver:3.6.0
+    environment:
+      RENV_PATHS_CACHE: /home/renv/cache
+      RENV_PATHS_LIBRARY: /home/renv/library
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - 'renv-lock-{{ checksum "renv.lock" }}'
+            - 'renv-lock'
+      - run:
+          name: Install dependencies
+          command: Rscript -e 'install.packages("styler")'
+
+      - run: Rscript -e 'styler::style_dir()'
+
+      - run:
+          name: Check style is up to date
+          command: |
+            if ! git diff --exit-code ; then
+                echo "Seems like style needs needs updating, please run 'styler::style_dir()' in Rstudio or 'Rscript -e \"styler::style_dir()\"' in your Terminal"
+            fi
+
 workflows:
   version: 2
   all:
     jobs:
       - build
+      - styler

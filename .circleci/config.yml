@@ -12,22 +12,17 @@ jobs:
           keys:
             - 'renv-lock-{{ checksum "renv.lock" }}'
             - "renv-lock"
-
       - run:
           name: Install dependencies
           command: Rscript -e "renv::hydrate(); renv::restore(); renv::clean()"
-
       - run:
           name: Build package
           command: Rscript -e "rmarkdown::render(input = 'test.Rmd', output_dir = 'output_dir')"
-
       - store_artifacts: { path: ~/project/output_dir }
-
       - save_cache:
           key: 'renv-lock-{{ checksum "renv.lock" }}'
           paths:
             - /home/renv
-
       - run:
           name: Check dependencies are correctly recorded in renv.lock
           command: |
@@ -47,13 +42,11 @@ jobs:
       - restore_cache:
           keys:
             - 'renv-lock-{{ checksum "renv.lock" }}'
-            - 'renv-lock'
+            - "renv-lock"
       - run:
           name: Install dependencies
           command: Rscript -e 'install.packages("styler")'
-
       - run: Rscript -e 'styler::style_dir()'
-
       - run:
           name: Check style is up to date
           command: |
@@ -62,6 +55,7 @@ jobs:
             if ! git diff --exit-code ; then
                 echo "Seems like style needs needs updating, please run 'styler::style_dir()' in Rstudio or 'Rscript -e \"styler::style_dir()\"' in your Terminal"
             fi
+      - store_artifacts: { path: ~/project }
 
 workflows:
   version: 2

@@ -15,7 +15,7 @@ jobs:
 
       - run:
           name: Install dependencies
-          command: Rscript -e "renv::hydrate(); renv::clean()"
+          command: Rscript -e "renv::restore(); renv::clean()"
 
       - run:
           name: Build package

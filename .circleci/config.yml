@@ -41,7 +41,7 @@ jobs:
       - restore_cache:
           keys:
             - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
-            - "renv-{{ .Environment.CIRCLE_JOB }}"
+            - 'renv-{{ .Environment.CIRCLE_JOB }}'
       - run:
           name: Install dependencies
           command: Rscript -e 'install.packages("styler")'
@@ -49,6 +49,7 @@ jobs:
       - save_cache:
           key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ .BuildNum }}'
           paths: [ /home/renv ]
+          when: always
       - run:
           name: Check repo is up to date
           command: |
@@ -81,6 +82,7 @@ jobs:
       - save_cache:
           key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ .BuildNum }}'
           paths: [ /home/renv ]
+          when: always
 
 workflows:
   version: 2

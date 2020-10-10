@@ -14,7 +14,7 @@ install.packages("testthat")
 install.packages("sp")
 install.packages("sf")
 install.packages("raster")
-install.packages("rgdal")
+# install.packages("rgdal") # binaries for macos, can't run on linux
 install.packages("maptools")
 install.packages("rasterVis")
 install.packages("tmap")
@@ -235,7 +235,7 @@ crs(hi_binary)
 # crs(thi_binary)
 crs(heat_crop_binary)
 # change the coordinate reference system if required (fine for vector, not fine for raster unless absolutely necessary because values of the new cells must be based on values of the old cells, so loss of precision). Same process used for raster if required.
-# library(rgdal)
+library(rgdal)
 # new_crs<-CRS("+proj=robin + datum=WGS84")
 # countries_raster_robinson_crs<-spTransform(countries_shp,new_crs)
 

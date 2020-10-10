@@ -14,7 +14,10 @@ jobs:
             - 'renv-{{ .Environment.CIRCLE_JOB }}'
       - run:
           name: Install dependencies
-          command: Rscript -e "renv::hydrate(); renv::restore(); renv::clean()"
+          command: |
+            apt-get update
+            apt-get install -y libudunits2-dev
+            Rscript -e "renv::hydrate(); renv::restore(); renv::clean()"
       - run:
           name: Build package
           command: Rscript -e "rmarkdown::render(input = 'test.Rmd', output_dir = 'output_dir')"

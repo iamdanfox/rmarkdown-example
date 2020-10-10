@@ -65,7 +65,7 @@ jobs:
 
   lintr:
     docker:
-      - image: rocker/r-ver:3.6.0
+      - image: rocker/verse:3.6.0
     environment:
       RENV_PATHS_CACHE: /home/renv/cache
       RENV_PATHS_LIBRARY: /home/renv/library
@@ -78,8 +78,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update
-            apt-get install -y curl
             Rscript -e 'install.packages("lintr")'
       - run: Rscript -e 'lintr::lint_dir()'
       - save_cache:

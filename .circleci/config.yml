@@ -10,7 +10,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
+            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}-{{ checksum ".circleci/config.yml" }}'
             - 'renv-{{ .Environment.CIRCLE_JOB }}'
       - run:
           name: Install dependencies
@@ -23,7 +23,7 @@ jobs:
           command: Rscript -e "rmarkdown::render(input = 'test.Rmd', output_dir = 'output_dir')"
       - store_artifacts: { path: ~/project/output_dir }
       - save_cache:
-          key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
+          key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}-{{ checksum ".circleci/config.yml" }}'
           paths: [ /home/renv ]
       - run:
           name: Check dependencies are correctly recorded in renv.lock
@@ -43,7 +43,6 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
             - 'renv-{{ .Environment.CIRCLE_JOB }}'
       - run:
           name: Install dependencies
@@ -76,7 +75,6 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ .BuildNum }}'
             - 'renv-{{ .Environment.CIRCLE_JOB }}'
       - run:
           name: Install dependencies

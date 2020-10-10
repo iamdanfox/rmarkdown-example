@@ -33,8 +33,7 @@ jobs:
           command: |
             Rscript -e "renv::snapshot()"
             if ! git diff --exit-code ; then
-                echo "Please run `renv::snapshot()` in Rstudio or `Rscript -e 'renv::snapshot()'` in your Terminal"
-                exit 1
+                echo "Seems like renv.lock needs updating, please run 'renv::snapshot()' in Rstudio or 'Rscript -e \"renv::snapshot()\"' in your Terminal"
             fi
 
 workflows:

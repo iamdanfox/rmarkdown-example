@@ -16,7 +16,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update
-            apt-get install -y libudunits2-dev libgdal1-dev gdal-bin libproj-dev proj-data proj-bin libgeos-dev
+            apt-get install -y libudunits2-dev libgdal-dev gdal-bin libproj-dev proj-data proj-bin libgeos-dev
             Rscript -e "renv::hydrate(); renv::restore(); renv::clean()"
       - run:
           name: Build package

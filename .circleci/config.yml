@@ -3,31 +3,38 @@ jobs:
   build:
     docker:
       - image: rocker/verse:3.6.0
+    environment:
+      RENV_PATHS_CACHE: /home/renv/cache
+      RENV_PATHS_LIBRARY: /home/renv/library
     steps:
       - checkout
-      # - run:
-      #     name: Install package dependencies
-      #     command: R -e "devtools::install_deps(dep = TRUE)"
-      # - run:
-      #     name: Build package
-      #     command: R CMD build .
-      # - run:
-      #     name: Check package
-      #     command: R CMD check *tar.gz
       - restore_cache:
           keys:
-            - wip-
+            - 'renv-{{ checksum "renv.lock" }}'
+            - 'renv'
+
+      - run:
+          name: Install dependencies
+          command: Rscript -e "renv::hydrate(); renv::restore(); renv::clean()"
 
       - run:
           name: Build package
           command: Rscript -e "rmarkdown::render(input = 'test.Rmd', output_dir = 'output_dir')"
 
-      - save_cache:
-          key: "wip-{{ .BuildNum }}"
-          paths:
-            - "/usr/local/lib/R/site-library"
-
       - store_artifacts: { path: ~/project/output_dir }
+
+      - save_cache:
+          key: 'renv-{{ checksum "renv.lock" }}'
+          paths:
+            - /home/renv
+
+      - run:
+          name: Check dependencies are correctly recorded in renv.lock
+          command: |
+            Rscript -e "renv::snapshot()"
+            if ! git diff --exit-code ; then
+                echo "Seems like renv.lock needs updating, please run 'renv::snapshot()' in Rstudio or 'Rscript -e \"renv::snapshot()\"' in your Terminal"
+            fi
 
 workflows:
   version: 2

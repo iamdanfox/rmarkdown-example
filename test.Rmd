@@ -9,8 +9,6 @@ output:
     toc: yes
   md_document:
     variant: markdown_github
-csl: apa.csl
-bibliography: test.bib
 ---
 
 ```{r setup, echo=FALSE, include=TRUE}

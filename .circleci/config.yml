@@ -10,8 +10,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - 'renv-{{ checksum "renv.lock" }}'
-            - 'renv'
+            - 'renv-lock-{{ checksum "renv.lock" }}'
+            - 'renv-lock'
 
       - run:
           name: Install dependencies
@@ -24,7 +24,7 @@ jobs:
       - store_artifacts: { path: ~/project/output_dir }
 
       - save_cache:
-          key: 'renv-{{ checksum "renv.lock" }}'
+          key: 'renv-lock-{{ checksum "renv.lock" }}'
           paths:
             - /home/renv
 

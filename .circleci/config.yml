@@ -53,9 +53,12 @@ jobs:
             apt-get update
             apt-get install -y git
             if ! git diff --exit-code ; then
-                echo "Seems like style needs needs updating, please run 'styler::style_dir()' in Rstudio or 'Rscript -e \"styler::style_dir()\"' in your Terminal"
+                echo "Seems like style needs needs updating, please run 'styler::style_dir()' in Rstudio or 'Rscript -e "styler::style_dir()\"' in your Terminal"
+                exit 1
             fi
-      - store_artifacts: { path: ~/project }
+      - store_artifacts:
+          path: ~/project
+          when: always
 
 workflows:
   version: 2

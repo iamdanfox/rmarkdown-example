@@ -10,8 +10,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - 'renv-lock-{{ checksum "renv.lock" }}'
-            - "renv-lock"
+            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
+            - 'renv-{{ .Environment.CIRCLE_JOB }}'
       - run:
           name: Install dependencies
           command: Rscript -e "renv::hydrate(); renv::restore(); renv::clean()"
@@ -20,9 +20,8 @@ jobs:
           command: Rscript -e "rmarkdown::render(input = 'test.Rmd', output_dir = 'output_dir')"
       - store_artifacts: { path: ~/project/output_dir }
       - save_cache:
-          key: 'renv-lock-{{ checksum "renv.lock" }}'
-          paths:
-            - /home/renv
+          key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
+          paths: [ /home/renv ]
       - run:
           name: Check dependencies are correctly recorded in renv.lock
           command: |
@@ -41,24 +40,47 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - 'renv-lock-{{ checksum "renv.lock" }}'
-            - "renv-lock"
+            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ checksum "renv.lock" }}'
+            - "renv-{{ .Environment.CIRCLE_JOB }}"
       - run:
           name: Install dependencies
           command: Rscript -e 'install.packages("styler")'
       - run: Rscript -e 'styler::style_dir()'
+      - save_cache:
+          key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ .BuildNum }}'
+          paths: [ /home/renv ]
       - run:
-          name: Check style is up to date
+          name: Check repo is up to date
           command: |
             apt-get update
             apt-get install -y git
             if ! git diff --exit-code ; then
-                echo "Seems like style needs needs updating, please run 'styler::style_dir()' in Rstudio or 'Rscript -e "styler::style_dir()\"' in your Terminal"
+                echo "Seems like style needs needs updating, please run 'styler::style_dir()' in Rstudio or 'Rscript -e \"styler::style_dir()\"' in your Terminal"
                 exit 1
             fi
       - store_artifacts:
           path: ~/project
           when: always
+
+  lintr:
+    docker:
+      - image: rocker/r-ver:3.6.0
+    environment:
+      RENV_PATHS_CACHE: /home/renv/cache
+      RENV_PATHS_LIBRARY: /home/renv/library
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - 'renv-{{ .Environment.CIRCLE_JOB }}-{{ .BuildNum }}'
+            - 'renv-{{ .Environment.CIRCLE_JOB }}'
+      - run:
+          name: Install dependencies
+          command: Rscript -e 'install.packages("lintr")'
+      - run: Rscript -e 'lintr::lint_dir()'
+      - save_cache:
+          key: 'renv-{{ .Environment.CIRCLE_JOB }}-{{ .BuildNum }}'
+          paths: [ /home/renv ]
 
 workflows:
   version: 2
@@ -66,3 +88,4 @@ workflows:
     jobs:
       - build
       - styler
+      - lintr
